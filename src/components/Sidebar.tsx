@@ -3,14 +3,12 @@
 import { useEffect, useState } from "react";
 import { BookOpen, Map, Library, GraduationCap, Feather } from "lucide-react";
 import { useInkWash } from "@/components/InkWashProvider";
+import { NAV_SECTIONS } from "@/lib/navigation";
 
-const navItems = [
-  { name: "Introduction", id: "intro",     icon: BookOpen,      rune: "ᚠ" },
-  { name: "Projects",     id: "projects",  icon: Map,           rune: "ᚢ" },
-  { name: "Research",     id: "research",  icon: Library,       rune: "ᚦ" },
-  { name: "Academics",    id: "academics", icon: GraduationCap, rune: "ᚨ" },
-  { name: "Contact",      id: "contact",   icon: Feather,       rune: "ᚱ" },
-];
+const navItems = NAV_SECTIONS.map((section, idx) => ({
+  ...section,
+  icon: [BookOpen, Map, Library, GraduationCap, Feather][idx],
+}));
 
 // Extended rune scroll for the spine
 const RUNE_SCROLL = "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ";

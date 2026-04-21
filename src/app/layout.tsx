@@ -8,6 +8,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import InkSplash from "@/components/InkSplash";
 import Constellation from "@/components/Constellation";
 import ThemeToggle from "@/components/ThemeToggle";
+import GlyphRitual from "@/components/GlyphRitual";
+import ArcaneAura from "@/components/ArcaneAura";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"] });
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* Flash-prevention: apply saved theme before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('codex-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
+            __html: `(function(){try{var saved=localStorage.getItem('codex-theme');var allowed=['light','dark','dawn','midnight'];var t=allowed.indexOf(saved||'')>=0?saved:null;if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
         />
       </head>
@@ -32,9 +34,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <InkWashProvider>
           <ScrollProgress />
           <Constellation />
+          <ArcaneAura />
           <FloatingMotes />
           <OrbitingRuneCursor />
           <InkSplash />
+          <GlyphRitual />
           {children}
           <ThemeToggle />
         </InkWashProvider>

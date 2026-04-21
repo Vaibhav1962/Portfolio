@@ -1,40 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { THEME_LABELS, THEME_ORDER, type ThemeName } from "@/lib/themes";
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const [theme, setTheme] = useState<ThemeName>("light");
   const [mounted, setMounted] = useState(false);
 
-  /* Read saved preference on mount */
   useEffect(() => {
-    const saved = localStorage.getItem("codex-theme");
-    const prefersDark =
-      saved === "dark" ||
-      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setDark(prefersDark);
-    document.documentElement.setAttribute(
-      "data-theme",
-      prefersDark ? "dark" : "light"
-    );
+    const saved = localStorage.getItem("codex-theme") as ThemeName | null;
+    const resolved: ThemeName =
+      saved && THEME_ORDER.includes(saved)
+        ? saved
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    document.documentElement.setAttribute("data-theme", resolved);
+    setTheme(resolved);
     setMounted(true);
   }, []);
 
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    const theme = next ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("codex-theme", theme);
+  const cycleTheme = () => {
+    const idx = THEME_ORDER.indexOf(theme);
+    const nextTheme = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+    setTheme(nextTheme);
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("codex-theme", nextTheme);
   };
 
   if (!mounted) return null;
 
+  const icon =
+    theme === "dark"
+      ? "☽"
+      : theme === "dawn"
+        ? "✶"
+        : theme === "midnight"
+          ? "✦"
+          : "☀";
+
   return (
     <button
-      onClick={toggle}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      title={dark ? "Light the candle" : "Douse the flame"}
+      onClick={cycleTheme}
+      aria-label={`Theme: ${THEME_LABELS[theme]}. Click to cycle theme.`}
+      title={`Theme: ${THEME_LABELS[theme]}`}
       className="fixed bottom-8 right-8 z-[300] w-12 h-12 flex items-center justify-center
                  rounded-full border border-[var(--color-gold)] bg-[var(--background)]
                  shadow-[0_0_20px_rgba(198,168,124,0.25)] hover:shadow-[0_0_30px_rgba(198,168,124,0.45)]
@@ -75,12 +84,12 @@ export default function ThemeToggle() {
 
       {/* Icon */}
       <span
-        key={dark ? "moon" : "sun"}
+        key={theme}
         className={`text-[var(--color-gold)] text-lg select-none relative z-10 ${
-          dark ? "theme-toggle-moon" : "theme-toggle-sun"
+          theme === "dark" || theme === "midnight" ? "theme-toggle-moon" : "theme-toggle-sun"
         }`}
       >
-        {dark ? "☽" : "☀"}
+        {icon}
       </span>
     </button>
   );
